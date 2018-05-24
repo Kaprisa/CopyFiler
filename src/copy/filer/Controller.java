@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -54,6 +55,12 @@ public class Controller {
     private CheckBox showSame;
 
     @FXML
+    private Button switchDirectoriesButton;
+
+    @FXML
+    private Button copyPathButton;
+
+    @FXML
     private CheckBox compareSame;
 
     @FXML
@@ -98,39 +105,39 @@ public class Controller {
         iv5.setImage(new Image("/copy/filer/assets/file.png"));
         iv6.setImage(new Image("/copy/filer/assets/folder.png"));
         okButton.setOnAction(event -> process());
-        setShowDirectoryDialogAction(dir1Button, dir1, tree1);
-        setShowDirectoryDialogAction(dir2Button, dir2, tree2);
+        dir1Button.setOnAction(event -> setShowDirectoryDialogAction(dir1, tree1, dir2));
+        dir1.setOnKeyPressed(event -> { if(event.getCode() == KeyCode.ENTER) { buildTree(Paths.get(dir1.getText()), makeRoot(dir1, tree1)); } });
+        dir2Button.setOnAction(event -> setShowDirectoryDialogAction(dir2, tree2, dir1));
+        dir2.setOnKeyPressed(event -> { if(event.getCode() == KeyCode.ENTER) { buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2)); } });
         tree1.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
             try {
                 chosenFile.setText(newValue.getValue().path.toString());
             } catch (NullPointerException e) {}
         });
         copyButton.setOnAction(e -> {
-            try {
-                copy(chosenFile.getText(), dir2.getText() + chosenFile.getText().replaceFirst(dir1.getText(), ""), false);
-                buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
-                buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            copy(chosenFile.getText(), dir2.getText(), false);
+            buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
+            buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
         });
         copyNew.setOnAction(e -> {
+            System.out.println(newFiles.size());
             newFiles.forEach(i -> {
-                try {
-                    copy(i.toString(), dir2.getText(), true);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                System.out.println(i);
+                copy(i.toString(), dir2.getText(), false);
             });
+            buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
+            buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
         });
         copyAll.setOnAction(e -> {
             String to = dir2.getText();
             try (Stream<Path> paths = Files.walk(Paths.get(dir1.getText()))) {
                 paths.forEach(p -> {
                     try {
-                        Files.copy(p, Paths.get(to + p.toString().replaceFirst(dir1.getText().toString(), "")), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                        Path path = Paths.get(to + p.toString().replaceFirst(dir1.getText(), ""));
+                        if (Files.notExists(path) || Files.isRegularFile(path))
+                            Files.copy(p, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                     } catch (IOException e1) {
-                        //e1.printStackTrace();
+                        e1.printStackTrace();
                     }
                 });
             } catch (IOException e1) {
@@ -139,19 +146,37 @@ public class Controller {
             buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
             buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
         });
+        copyPathButton.setOnAction(e -> {
+            dir2.setText(Paths.get(dir1.getText()).getParent().toString());
+        });
+        switchDirectoriesButton.setOnAction(e -> {
+            String text1 = dir1.getText();
+            buildTree(Paths.get(text1), makeRoot(dir1, tree2));
+            buildTree1(Paths.get(dir2.getText()), makeRoot(dir2, tree1), Paths.get(text1));
+            dir1.setText(dir2.getText());
+            dir2.setText(text1);
+        });
     }
 
-    private void copy(String from, String to, boolean isCheckDir) throws IOException {
+    private void copy(String from, String to, boolean isCheckDir) {
         if (Files.isRegularFile(Paths.get(from)) || isCheckDir) {
-            Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            try {
+                Path path = Paths.get(to  + from.replaceFirst(dir1.getText(), ""));
+                if (Files.notExists(path) || Files.isRegularFile(path))
+                    Files.copy(Paths.get(from), path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             try (Stream<Path> paths = Files.walk(Paths.get(from))) {
                 paths
                         .forEach(f -> {
                             try {
-                                Files.copy(f, Paths.get(to + f.toString().replaceFirst(from, "")), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                                Path path = Paths.get(to + from.replaceFirst(dir1.getText(), "") + f.toString().replaceFirst(from, ""));
+                                if (Files.notExists(path) || Files.isRegularFile(path))
+                                    Files.copy(f, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                             } catch (IOException e) {
-                                //e.printStackTrace();
+                                e.printStackTrace();
                             }
                         });
             } catch (IOException e) {
@@ -160,18 +185,20 @@ public class Controller {
         }
     }
 
-    private void setShowDirectoryDialogAction(Button button, TextField field, TreeView<MyPath> tree) {
-        button.setOnAction(event -> {
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            Stage stage = (Stage) pane.getScene().getWindow();
-            File selectedDirectory =
-                    directoryChooser.showDialog(stage);
-            if (selectedDirectory != null) {
-                field.setText(selectedDirectory.getAbsolutePath());
-                TreeItem<MyPath> root = makeRoot(field, tree);
-                buildTree(Paths.get(field.getText()), root);
-            }
-        });
+    private void setShowDirectoryDialogAction(TextField field, TreeView<MyPath> tree, TextField field2) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        Stage stage = (Stage) pane.getScene().getWindow();
+        String initialPath = field2.getText();
+        if (initialPath.length() > 0) {
+            directoryChooser.setInitialDirectory(new File(Paths.get(initialPath).getParent().toString()));
+        }
+        File selectedDirectory =
+                directoryChooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            field.setText(selectedDirectory.getAbsolutePath());
+            TreeItem<MyPath> root = makeRoot(field, tree);
+            buildTree(Paths.get(field.getText()), root);
+        }
     }
 
     private void process() {
@@ -187,16 +214,21 @@ public class Controller {
     }
 
     private void buildTree1(Path path, TreeItem<MyPath> parent, Path path2) {
+        if (path.toString().equals(dir1.getText()))
+            newFiles.clear();
         try (Stream<Path> paths = Files.walk(path, 1)) {
             paths
                     .forEach(f -> {
                         if (f != path) {
                             String name = f.getFileName().normalize().toString();
                             TreeItem<MyPath> item = new TreeItem<MyPath>(new MyPath(f));
-                            Path p2 = Paths.get(path2 + "/" + name);
+                            Path p2 = path2.resolve(name);
                             boolean isSame = false;
                             if (Files.notExists(p2)) {
                                 item.setGraphic(new ImageView(new Image("/copy/filer/assets/warning.png")));
+                                System.out.println(newFiles.size());
+                                if (path.toString().equals(dir1.getText()))
+                                    newFiles.add(f);
                             } else {
                                 try {
                                     String icon = "file";
@@ -204,7 +236,7 @@ public class Controller {
                                     if (!Files.getAttribute(f, "size").equals(Files.getAttribute(p2, "size"))) {
                                         icon = "size";
                                         isSame = false;
-                                    } else if (((FileTime)Files.getAttribute(f, "basic:creationTime")).compareTo((FileTime)Files.getAttribute(p2, "basic:creationTime")) != 0) {
+                                    } else if (Files.isRegularFile(f) && Files.getLastModifiedTime(f).compareTo(Files.getLastModifiedTime(p2)) != 0) {
                                         icon = "schedule";
                                         isSame = false;
                                     } else if (compareSame.isSelected() && Files.isRegularFile(f) && checksumMappedFile(f.toString()) != checksumMappedFile(p2.toString())) {
@@ -213,7 +245,7 @@ public class Controller {
                                     } else if (Files.isDirectory(f)) {
                                         icon = "folder";
                                     }
-                                    if (isSame && ((FileTime)Files.getAttribute(f, "basic:creationTime")).compareTo((FileTime)Files.getAttribute(p2, "basic:creationTime")) > 0) {
+                                    if (path.toString().equals(dir1.getText()) && Files.getLastModifiedTime(f).compareTo(Files.getLastModifiedTime(p2)) > 0) {
                                         newFiles.add(f);
                                     }
                                     item.setGraphic(new ImageView(new Image("/copy/filer/assets/"+icon+".png")));
@@ -223,7 +255,7 @@ public class Controller {
                             }
                             if (!(showSame.isSelected() && isSame)) {
                                 if (processEmbedded.isSelected() && Files.isDirectory(f)) {
-                                    buildTree1(f, item, Paths.get(path2 + "/" + name));
+                                    buildTree1(f, item, path2.resolve(name));
                                 }
                                 parent.getChildren().add(item);
                             }
@@ -271,7 +303,6 @@ public class Controller {
     private static class MyPath {
         Path path;
         String name;
-        String icon;
 
         MyPath(Path path) {
             this.path = path;

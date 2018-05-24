@@ -11,7 +11,7 @@ foreach ($it as $file_info) {
     $name = $file_info->getFileName();
     if ( $name === '.' || $name === '..' || in_array($name, $EXCLUDES)) {
         var_dump(in_array($name, $EXCLUDES));
-        var_dump("test");
+        var_dump("tesp");
         continue;
     }
     //if (array_has($EXCLUDES, $name)) var_dump($name);
