@@ -133,7 +133,7 @@ public class Controller {
             try (Stream<Path> paths = Files.walk(Paths.get(dir1.getText()))) {
                 paths.forEach(p -> {
                     try {
-                        Path path = Paths.get(to + p.toString().replaceFirst(dir1.getText(), ""));
+                        Path path = Paths.get(to + p.toString().substring(dir1.getText().length(), p.toString().length()));
                         if (Files.notExists(path) || Files.isRegularFile(path))
                             Files.copy(p, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                     } catch (IOException e1) {
@@ -161,7 +161,7 @@ public class Controller {
     private void copy(String from, String to, boolean isCheckDir) {
         if (Files.isRegularFile(Paths.get(from)) || isCheckDir) {
             try {
-                Path path = Paths.get(to  + from.replaceFirst(dir1.getText(), ""));
+                Path path = Paths.get(to  + from.substring(dir1.getText().length(), from.length()));
                 if (Files.notExists(path) || Files.isRegularFile(path))
                     Files.copy(Paths.get(from), path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
             } catch (IOException e) {
@@ -172,7 +172,7 @@ public class Controller {
                 paths
                         .forEach(f -> {
                             try {
-                                Path path = Paths.get(to + from.replaceFirst(dir1.getText(), "") + f.toString().replaceFirst(from, ""));
+                                Path path = Paths.get(to + from.substring(dir1.getText().length(), from.length()) + f.toString().substring(from.length(), f.toString().length()));
                                 if (Files.notExists(path) || Files.isRegularFile(path))
                                     Files.copy(f, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                             } catch (IOException e) {
