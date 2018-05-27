@@ -11,9 +11,9 @@ foreach ($it as $file_info) {
     $name = $file_info->getFileName();
     if ( $name === '.' || $name === '..' || in_array($name, $EXCLUDES)) {
         var_dump(in_array($name, $EXCLUDES));
-        var_dump("tesp");
         continue;
     }
+    var_dump('Hello!');
     //if (array_has($EXCLUDES, $name)) var_dump($name);
     $path = $file_info->isDir()
         ? array($name => array())

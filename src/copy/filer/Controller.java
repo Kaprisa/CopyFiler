@@ -120,9 +120,7 @@ public class Controller {
             buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
         });
         copyNew.setOnAction(e -> {
-            System.out.println(newFiles.size());
             newFiles.forEach(i -> {
-                System.out.println(i);
                 copy(i.toString(), dir2.getText());
             });
             buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
@@ -188,7 +186,9 @@ public class Controller {
     private void setShowDirectoryDialogAction(TextField field, TreeView<MyPath> tree, TextField field2) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         Stage stage = (Stage) pane.getScene().getWindow();
-        String initialPath = field2.getText();
+        String initialPath = field.getText();
+        if (initialPath.length() == 0)
+            initialPath = field2.getText();
         if (initialPath.length() > 0) {
             directoryChooser.setInitialDirectory(new File(Paths.get(initialPath).getParent().toString()));
         }
@@ -226,7 +226,6 @@ public class Controller {
                             boolean isSame = false;
                             if (Files.notExists(p2)) {
                                 item.setGraphic(new ImageView(new Image("/copy/filer/assets/warning.png")));
-                                System.out.println(newFiles.size());
                                 if (path.toString().equals(dir1.getText()))
                                     newFiles.add(f);
                             } else {
