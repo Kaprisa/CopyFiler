@@ -115,7 +115,7 @@ public class Controller {
             } catch (NullPointerException e) {}
         });
         copyButton.setOnAction(e -> {
-            copy(chosenFile.getText(), dir2.getText(), false);
+            copy(chosenFile.getText(), dir2.getText());
             buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
             buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
         });
@@ -123,7 +123,7 @@ public class Controller {
             System.out.println(newFiles.size());
             newFiles.forEach(i -> {
                 System.out.println(i);
-                copy(i.toString(), dir2.getText(), false);
+                copy(i.toString(), dir2.getText());
             });
             buildTree(Paths.get(dir2.getText()), makeRoot(dir2, tree2));
             buildTree1(Paths.get(dir1.getText()), makeRoot(dir1, tree1), Paths.get(dir2.getText()));
@@ -133,7 +133,7 @@ public class Controller {
             try (Stream<Path> paths = Files.walk(Paths.get(dir1.getText()))) {
                 paths.forEach(p -> {
                     try {
-                        Path path = Paths.get(to + p.toString().replaceFirst(dir1.getText(), ""));
+                        Path path = Paths.get(to + p.toString().substring(dir1.getText().length(), p.toString().length()));
                         if (Files.notExists(path) || Files.isRegularFile(path))
                             Files.copy(p, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                     } catch (IOException e1) {
@@ -158,10 +158,10 @@ public class Controller {
         });
     }
 
-    private void copy(String from, String to, boolean isCheckDir) {
-        if (Files.isRegularFile(Paths.get(from)) || isCheckDir) {
+    private void copy(String from, String to) {
+        if (Files.isRegularFile(Paths.get(from))) {
             try {
-                Path path = Paths.get(to  + from.replaceFirst(dir1.getText(), ""));
+                Path path = Paths.get(to  + from.substring(dir1.getText().length(), from.length()));
                 if (Files.notExists(path) || Files.isRegularFile(path))
                     Files.copy(Paths.get(from), path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
             } catch (IOException e) {
@@ -172,7 +172,7 @@ public class Controller {
                 paths
                         .forEach(f -> {
                             try {
-                                Path path = Paths.get(to + from.replaceFirst(dir1.getText(), "") + f.toString().replaceFirst(from, ""));
+                                Path path = Paths.get(to + from.substring(dir1.getText().length(), from.length()) + f.toString().substring(from.length(), f.toString().length()));
                                 if (Files.notExists(path) || Files.isRegularFile(path))
                                     Files.copy(f, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                             } catch (IOException e) {

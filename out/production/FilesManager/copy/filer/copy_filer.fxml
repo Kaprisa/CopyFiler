@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.ImageView?>
@@ -13,36 +14,12 @@
 
 <AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1168.0" style="-fx-background-color: #2E3348;" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="copy.filer.Controller">
    <children>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="14.0" prefHeight="85.0" prefWidth="1124.0" text="CopyFiler" textFill="WHITE">
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" prefHeight="104.0" prefWidth="1124.0" text="CopyFiler" textFill="WHITE" AnchorPane.leftAnchor="22.0" AnchorPane.rightAnchor="22.0">
          <font>
             <Font name="SignPainter-HouseScript" size="64.0" />
          </font>
       </Label>
-      <AnchorPane layoutX="454.0" layoutY="106.0" prefHeight="586.0" prefWidth="700.0" style="-fx-background-color: #fafafa;">
-         <children>
-            <TextField fx:id="dir1" layoutY="15.0" prefHeight="28.0" prefWidth="255.0" promptText="Директория 1">
-               <font>
-                  <Font name="Monaco" size="13.0" />
-               </font>
-            </TextField>
-            <TextField fx:id="dir2" layoutX="374.0" layoutY="16.0" prefHeight="27.0" prefWidth="255.0" promptText="Директория 2" />
-            <Button fx:id="dir1Button" layoutX="255.0" layoutY="15.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="73.0" style="-fx-background-color: #2E3348 #2E3348;" text="Выбрать" textFill="WHITE">
-               <font>
-                  <Font name="Menlo Regular" size="13.0" />
-               </font>
-            </Button>
-            <Button fx:id="dir2Button" layoutX="627.0" layoutY="15.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348;" text="Выбрать" textFill="WHITE">
-               <font>
-                  <Font name="Menlo Regular" size="13.0" />
-               </font>
-            </Button>
-            <TreeView fx:id="tree1" layoutY="53.0" prefHeight="525.0" prefWidth="326.0" style="-fx-background-color: #fafafa;" />
-            <TreeView fx:id="tree2" layoutX="374.0" layoutY="53.0" prefHeight="525.0" prefWidth="326.0" style="-fx-background-color: #fafafa;" />
-            <Button fx:id="copyPathButton" layoutX="337.0" layoutY="16.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348 #2E3348 #2E3348;" text="&gt;" textFill="WHITE" />
-            <Button fx:id="switchDirectoriesButton" layoutX="333.0" layoutY="280.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348 #2E3348 #2E3348;" text="&lt;&gt;" textFill="WHITE" />
-         </children>
-      </AnchorPane>
-      <AnchorPane layoutX="22.0" layoutY="106.0" prefHeight="586.0" prefWidth="276.0" style="-fx-background-color: #ffffff;">
+      <AnchorPane layoutX="22.0" layoutY="122.0" prefHeight="586.0" prefWidth="276.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="122.0">
          <children>
             <CheckBox fx:id="processEmbedded" layoutX="15.0" layoutY="54.0" mnemonicParsing="false" selected="true" text="Обработка вложенных папок" />
             <Button fx:id="okButton" layoutX="170.0" layoutY="152.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348;" text="Сравнить" textFill="WHITE">
@@ -52,7 +29,7 @@
             </Button>
             <CheckBox fx:id="showSame" layoutX="15.0" layoutY="83.0" mnemonicParsing="false" text="Не показывать одинаковые файлы" />
             <CheckBox fx:id="compareSame" layoutX="15.0" layoutY="109.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="404.0" text="Сравнивать содержимое при совпадении даты и размера" />
-            <Pane layoutX="8.0" layoutY="206.0" prefHeight="366.0" prefWidth="404.0" style="-fx-background-color: #2E3348;">
+            <Pane layoutX="8.0" layoutY="206.0" prefHeight="366.0" prefWidth="404.0" style="-fx-background-color: #2E3348;" AnchorPane.bottomAnchor="14.0" AnchorPane.topAnchor="206.0">
                <children>
                   <TextField fx:id="chosenFile" editable="false" layoutX="14.0" layoutY="47.0" prefHeight="27.0" prefWidth="270.0" style="-fx-background-color: #ffffff;" />
                   <Button fx:id="copyButton" layoutX="294.0" layoutY="47.0" mnemonicParsing="false" style="-fx-background-color: #ffffff;" text="Перенести" textFill="#0c1125" />
@@ -95,7 +72,39 @@
                   <Label layoutX="300.0" layoutY="287.0" text="Директория" textFill="WHITE" />
                </children>
             </Pane>
+            <Button fx:id="switchDirectoriesButton" layoutX="370.0" layoutY="14.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348 #2E3348 #2E3348;" text="&lt;&gt;" textFill="WHITE" />
          </children>
       </AnchorPane>
+      <SplitPane dividerPositions="0.498567335243553" layoutX="454.0" layoutY="122.0" prefHeight="586.0" prefWidth="700.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="454.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="122.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TextField fx:id="dir2" layoutX="9.0" layoutY="9.0" prefHeight="27.0" prefWidth="219.0" promptText="Директория 2" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="118.0" />
+                  <TreeView fx:id="tree2" layoutX="9.0" layoutY="39.0" prefHeight="545.0" prefWidth="326.0" style="-fx-background-color: #fafafa;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0" />
+                  <Button fx:id="dir2Button" layoutX="236.0" layoutY="9.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348;" text="Выбрать" textFill="WHITE" AnchorPane.rightAnchor="35.0">
+                     <font>
+                        <Font name="Menlo Regular" size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="copyPathButton" layoutX="317.0" layoutY="9.0" mnemonicParsing="false" style="-fx-background-color: #2E3348 #2E3348 #2E3348 #2E3348;" text="&gt;" textFill="WHITE" AnchorPane.rightAnchor="0.5" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TextField fx:id="dir1" layoutX="4.0" layoutY="9.0" prefHeight="28.0" prefWidth="255.0" promptText="Директория 1" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="84.0">
+                     <font>
+                        <Font name="Monaco" size="13.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="dir1Button" layoutX="259.0" layoutY="9.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="73.0" style="-fx-background-color: #2E3348 #2E3348;" text="Выбрать" textFill="WHITE" AnchorPane.rightAnchor="7.0">
+                     <font>
+                        <Font name="Menlo Regular" size="13.0" />
+                     </font>
+                  </Button>
+                  <TreeView fx:id="tree1" layoutX="1.0" layoutY="45.0" prefHeight="539.0" prefWidth="344.0" style="-fx-background-color: #fafafa;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
    </children>
 </AnchorPane>
